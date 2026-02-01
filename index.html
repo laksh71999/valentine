@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valentine ❤️</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Megrim&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --line-size: 1px;
+
+      --color-init:  #F9D423;
+      --color-first: #FE4365;
+      --color-second:#C7F464;
+      --color-third: #4ECDC4;
+      --color-fourth:#556270;
+
+      --megrim: 'Megrim', cursive;
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--color-fourth);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    /* -------------------------
+       WELCOME LOADER
+    ------------------------- */
+    .loader { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .loader .line { position: absolute; width: 100%; height: 100%; z-index: 1; transform-origin: left top; }
+    .loader .line.first  { background: var(--color-first); }
+    .loader .line.second { background: var(--color-second); }
+    .loader .line.third  { background: var(--color-third); }
+    .loader .line.fourth { background: var(--color-fourth); }
+    .loader .mask { position: absolute; z-index: 2; }
+    .loader .mask.horizontal { width: 100%; height: calc(50% - var(--line-size)); }
+    .loader .mask.horizontal.top { top: 0; }
+    .loader .mask.horizontal.bottom { bottom: 0; }
+    .loader .mask.vertical { height: 100%; width: calc(50% - var(--line-size)); }
+    .loader .mask.vertical.left { left: 0; }
+    .loader .mask.vertical.right { right: 0; }
+
+    .loader .mask.top-right, .loader .mask.bottom-left, .loader .mask.top-left, .loader .mask.bottom-right {
+      width: 0; height: 0; border-style: solid;
+    }
+    .loader .mask.top-right { right: 0; top: 0; border-width: 0 271px 200px 0; }
+    .loader .mask.bottom-left { left: 0; bottom: 0; border-width: 200px 0 0 271px; transform-origin: top right; }
+    .loader .mask.top-left { left: 0; top: 0; border-width: 200px 271px 0 0; }
+    .loader .mask.bottom-right { right: 0; bottom: 0; border-width: 0 0 200px 271px; }
+
+    .loader.first { background: var(--color-init); }
+    .loader.first .mask { background: var(--color-init); }
+    .loader.second { background: var(--color-first); }
+    .loader.second .mask { background: var(--color-first); }
+    .loader.third { background: var(--color-second); }
+    .loader.third .mask.top-right { border-color: transparent var(--color-second) transparent transparent; }
+    .loader.third .mask.bottom-left { border-color: transparent transparent transparent var(--color-second); }
+    .loader.fourth { background: var(--color-third); }
+    .loader.fourth .mask.top-left { border-color: var(--color-third) transparent transparent transparent; }
+    .loader.fourth .mask.bottom-right { border-color: transparent transparent var(--color-third) transparent; }
+
+    .content { position: absolute; inset: 0; z-index: 1; background: var(--color-fourth); }
+    .content h1 {
+      position: absolute; top: 50%; left: 50%; margin: 0; padding: 0;
+      transform: translate(-50%, -50%);
+      font-family: var(--megrim);
+      font-size: 80px; color: white; text-align: center; letter-spacing: 1px;
+    }
+    .content h1 .underline {
+      position: relative; display: block; width: 160px; height: 5px; background: white;
+      margin-top: 20px; left: 50%; transform: translateX(-48%);
+    }
+    #welcomeWrap { position: absolute; inset: 0; z-index: 5; }
+
+    /* -------------------------
+       VALENTINE PAGE
+    ------------------------- */
+    #valentineWrap{
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; justify-content: center; align-items: center;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      opacity: 0; pointer-events: none;
+    }
+
+    .val-card{
+      position: relative;
+      width: min(520px, 92vw);
+      height: 360px;
+      text-align: center;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 22px;
+      padding: 30px 24px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .val-title{
+      font-size: clamp(26px, 3.2vw, 34px);
+      margin: 10px 0 24px;
+      color: #b8325c;
+      font-weight: 800;
+    }
+
+    .btn-row{
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 40px;
+    }
+
+    .val-btn{
+      padding: 14px 34px;
+      border: none;
+      border-radius: 999px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      user-select: none;
+    }
+
+    #yesBtn{
+      background: #e84393;
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(232, 67, 147, 0.28);
+      position: relative;
+      z-index: 3;
+    }
+    #yesBtn:hover{ box-shadow: 0 0 18px rgba(232, 67, 147, 0.65); }
+
+    /* Start inline next to YES */
+    #noBtn{
+      background: #636e72;
+      color: #fff;
+      position: relative; /* inline initially */
+      z-index: 3;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -24px;
+      font-size: 22px;
+      opacity: 0.7;
+      animation: floatUp 6s linear forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); }
+      to   { transform: translateY(-650px) scale(1.1); opacity: 0; }
+    }
+
+    #successScreen{
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      text-align: center;
+      color: white;
+      padding: 30px;
+      z-index: 3;
+    }
+    #successScreen .small{
+      display: block;
+      font-size: clamp(16px, 2.2vw, 22px);
+      font-weight: 600;
+      margin-top: 14px;
+      opacity: 0.95;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    /*Typewriter cursor blink */
+    #typewriter::after{
+      content: "▌";
+      margin-left: 4px;
+      animation: blink 0.9s infinite;
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* GIF OUTSIDE THE BOX (separate floating sticker) */
+    #funnyGif{
+      position: fixed;         /* not inside card layout */
+      right: 24px;
+      bottom: 24px;
+      width: min(360px, 45vw);
+      height: auto;
+      border-radius: 18px;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.25);
+      display: none;           /* shown after typing ends */
+      z-index: 9999;           /* above everything */
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- WELCOME SCREEN -->
+  <div id="welcomeWrap">
+    <div class="loader first">
+      <div class="line first"></div>
+      <div class="mask horizontal top"></div>
+      <div class="mask horizontal bottom"></div>
+    </div>
+
+    <div class="loader second">
+      <div class="line second"></div>
+      <div class="mask vertical left"></div>
+      <div class="mask vertical right"></div>
+    </div>
+
+    <div class="loader third">
+      <div class="line third"></div>
+      <div class="mask top-right"></div>
+      <div class="mask bottom-left"></div>
+    </div>
+
+    <div class="loader fourth">
+      <div class="line fourth"></div>
+      <div class="mask top-left"></div>
+      <div class="mask bottom-right"></div>
+    </div>
+
+    <div class="content">
+      <h1>
+        <span class="letter">W</span>
+        <span class="letter">e</span>
+        <span class="letter">l</span>
+        <span class="letter">c</span>
+        <span class="letter">o</span>
+        <span class="letter">m</span>
+        <span class="letter">e</span>
+        <div class="underline"></div>
+      </h1>
+    </div>
+  </div>
+
+  <!-- VALENTINE SCREEN -->
+  <div id="valentineWrap">
+    <div class="val-card" id="valCard">
+
+      <div id="successScreen">
+        <div style="font-size: clamp(28px, 4.2vw, 46px); font-weight: 900;">
+          💍 Yayyyy!!! 💖
+        </div>
+        <div id="typewriter" class="small"></div>
+      </div>
+
+      <div id="valMain">
+        <div class="val-title">Nishi, Will you be my Valentine? ❤️</div>
+        <div class="btn-row">
+          <button class="val-btn" id="yesBtn">Yes 💖</button>
+          <button class="val-btn" id="noBtn">No 💔</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GIF is OUTSIDE the card/box -->
+  <img
+    id="funnyGif"
+    alt="funny gif"
+    src="https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif"
+  />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+
+  <script>
+    // -------------------------
+    // WELCOME SCREEN
+    // -------------------------
+    var screenWidth, screenHeight;
+
+    function resize () {
+      screenWidth  = document.documentElement.clientWidth;
+      screenHeight = document.documentElement.clientHeight;
+    }
+
+    function setTimelineLoader () {
+      var first      = document.querySelector('.line.first'),
+          maskTop    = document.querySelector('.mask.top'),
+          maskBottom = document.querySelector('.mask.bottom');
+
+      var second     = document.querySelector('.line.second'),
+          maskLeft   = document.querySelector('.mask.left'),
+          maskRight  = document.querySelector('.mask.right');
+
+      var third          = document.querySelector('.line.third'),
+          maskBottomLeft = document.querySelector('.mask.bottom-left'),
+          maskTopRight   = document.querySelector('.mask.top-right');
+
+      maskTopRight.style.borderWidth   = '0 ' + (screenWidth-1) + 'px ' + (screenHeight-1) + 'px 0';
+      maskBottomLeft.style.borderWidth = ''  + (screenHeight-1) + 'px 0 0 ' + (screenWidth-1) + 'px';
+
+      var fourth         = document.querySelector('.line.fourth'),
+          maskTopLeft    = document.querySelector('.mask.top-left'),
+          maskBottomRight= document.querySelector('.mask.bottom-right');
+
+      maskTopLeft.style.borderWidth     = (screenHeight-1) + 'px ' + (screenWidth-1) + 'px 0 0';
+      maskBottomRight.style.borderWidth = '0 0 ' + (screenHeight-1) + 'px ' + (screenWidth-1) + 'px';
+
+      TweenMax.set(document.querySelector('.loader.second'), {alpha: 0});
+      TweenMax.set(document.querySelector('.loader.third'),  {alpha: 0});
+      TweenMax.set(document.querySelector('.loader.fourth'), {alpha: 0});
+
+      var tl = new TimelineMax();
+
+      tl.fromTo(first, 0.4, {x: screenWidth}, {x: 0, ease: Circ.easeIn}, 0);
+      tl.fromTo(maskTop, 0.4, {y: 0}, {y: -screenHeight/2, ease: Expo.easeOut, delay: 0.1}, 0.4);
+      tl.fromTo(maskBottom, 0.4, {y: 0}, {y: screenHeight/2, ease: Expo.easeOut, delay: 0.1}, 0.4);
+      tl.set(document.querySelector('.loader.first'), {alpha: 0});
+
+      tl.set(document.querySelector('.loader.second'), {alpha: 1});
+      tl.fromTo(second, 0.4, {y: -screenHeight}, {y: 0, ease: Circ.easeIn});
+      tl.fromTo(maskRight, 0.4, {x: 0}, {x: screenWidth/2, ease: Expo.easeOut, delay: 0.1}, 1.2);
+      tl.fromTo(maskLeft,  0.4, {x: 0}, {x: -screenWidth/2, ease: Expo.easeOut, delay: 0.1}, 1.2);
+      tl.set(document.querySelector('.loader.second'), {alpha: 0});
+
+      tl.set(document.querySelector('.loader.third'), {alpha: 1});
+      tl.fromTo(third, 0.4, {x: screenWidth}, {x: 0, ease: Circ.easeIn});
+      tl.fromTo(maskTopRight, 0.4, {y: 0}, {y: -screenHeight, ease: Circ.easeOut, delay: 0.1}, 2);
+      tl.fromTo(maskBottomLeft,0.4, {y: 0}, {y:  screenHeight, ease: Circ.easeOut, delay: 0.1}, 2);
+
+      tl.set(document.querySelector('.loader.fourth'), {alpha: 1});
+      tl.fromTo(fourth, 0.4, {y: -screenHeight}, {y: 0, ease: Circ.easeIn});
+      tl.fromTo(maskTopLeft, 0.4, {x: 0}, {x: -screenWidth, ease: Circ.easeOut, delay: 0.1}, 2.8);
+      tl.fromTo(maskBottomRight, 0.4, {x: 0}, {x: screenWidth, ease: Circ.easeOut, delay: 0.1}, 2.8);
+
+      return tl;
+    }
+
+    function setTimelineContent () {
+      var tl = new TimelineMax();
+      tl.set(document.querySelector('.underline'), {width: 0});
+      tl.staggerFromTo(
+        document.querySelectorAll('.letter'),
+        0.9,
+        {'font-size': 0, alpha: 0},
+        {'font-size': '80px', alpha: 1, ease: Expo.easeInOut},
+        0.08
+      );
+      tl.fromTo(document.querySelector('.underline'), 0.6,
+        {width: 0, alpha: 0},
+        {width: 160, alpha: 1, ease: Sine.easeOut}
+      );
+      return tl;
+    }
+
+    function startWelcomeThenValentine () {
+      resize();
+      window.addEventListener('resize', resize);
+
+      var tlLoader  = setTimelineLoader();
+      var tlContent = setTimelineContent();
+
+      var tlGlobal = new TimelineMax();
+
+      tlGlobal.set(document.querySelector('.content'), {alpha: 0});
+      tlGlobal.add(tlLoader);
+      tlGlobal.set(document.querySelector('.content'), {alpha: 1});
+      tlGlobal.add(tlContent);
+
+      tlGlobal.to({}, 0.5, {});
+
+      tlGlobal.to("#welcomeWrap", 0.8, {alpha: 0, ease: Power2.easeOut});
+      tlGlobal.set("#welcomeWrap", {display: "none"});
+      tlGlobal.set("#valentineWrap", {pointerEvents: "auto"});
+      tlGlobal.to("#valentineWrap", 0.9, {alpha: 1, ease: Power2.easeOut});
+
+      tlGlobal.play();
+    }
+
+    // -------------------------
+    // VALENTINE interactions
+    // -------------------------
+    (function setupValentine() {
+      const valWrap = document.getElementById("valentineWrap");
+      const card = document.getElementById("valCard");
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const success = document.getElementById("successScreen");
+      const main = document.getElementById("valMain");
+      const gifEl = document.getElementById("funnyGif");
+
+      let hoverTimer = null;
+      let scale = 1;
+
+      function spawnHeart() {
+        if (getComputedStyle(valWrap).opacity === "0") return;
+
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = Math.random() > 0.5 ? "❤️" : "💖";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.fontSize = (18 + Math.random() * 18) + "px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 6000);
+      }
+      setInterval(spawnHeart, 650);
+
+      function moveNoButton() {
+        // turn NO into a runaway button after first hover
+        noBtn.style.position = "absolute";
+
+        const cardRect = card.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+
+        const padding = 16;
+        const maxX = cardRect.width - btnRect.width - padding * 2;
+        const maxY = cardRect.height - btnRect.height - padding * 2;
+
+        const x = padding + Math.random() * Math.max(1, maxX);
+        const y = padding + Math.random() * Math.max(1, maxY);
+
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+      }
+
+      noBtn.addEventListener("mouseenter", () => {
+        moveNoButton();
+
+        hoverTimer = setTimeout(() => {
+          scale += 0.25;
+          yesBtn.style.transform = `scale(${scale})`;
+        }, 3000);
+      });
+
+      noBtn.addEventListener("mouseleave", () => clearTimeout(hoverTimer));
+
+      card.addEventListener("mousemove", (e) => {
+        const rect = noBtn.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 70) moveNoButton();
+      });
+
+      yesBtn.addEventListener("click", () => {
+        main.style.display = "none";
+        success.style.display = "grid";
+
+        const typeEl = document.getElementById("typewriter");
+
+        const lines = [
+          "Okayyy listen… 😌",
+          "You just made me the happiest person on this page. ❤️",
+          "Officially: you’re stuck with me now. 😤💖",
+          "Meet me for snacks + cute pics + one dramatic pose. 🤝😂"
+        ];
+
+        typeEl.textContent = "";
+        gifEl.style.display = "none";
+
+        let lineIndex = 0;
+        let charIndex = 0;
+
+        function typeNextChar() {
+          if (lineIndex >= lines.length) {
+            // show GIF outside the card AFTER typing
+            gifEl.style.display = "block";
+            return;
+          }
+
+          const currentLine = lines[lineIndex];
+
+          if (charIndex < currentLine.length) {
+            typeEl.textContent += currentLine[charIndex++];
+            setTimeout(typeNextChar, 35);
+          } else {
+            typeEl.textContent += "\n";
+            lineIndex++;
+            charIndex = 0;
+            setTimeout(typeNextChar, 450);
+          }
+        }
+
+        typeNextChar();
+      });
+    })();
+
+    startWelcomeThenValentine();
+  </script>
+</body>
+</html>
